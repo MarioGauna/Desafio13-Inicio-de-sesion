@@ -5,4 +5,4 @@ const isAuth = (req,res,next)=>{
     res.redirect('/login');
 }
 
-module.exports = isAuth;
+export default isAuth;

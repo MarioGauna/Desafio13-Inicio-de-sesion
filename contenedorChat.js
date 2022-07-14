@@ -1,4 +1,4 @@
-const knex = require('knex');
+import knex from 'knex';
 
 class contenedorChat {
     constructor(options,table) {
@@ -86,4 +86,4 @@ class contenedorChat {
     // }
 }
 
-module.exports = contenedorChat;
+export default contenedorChat;

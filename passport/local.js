@@ -1,35 +1,38 @@
-const passport = require('passport');
-const {Strategy} = require('passport-local')
-const usuarioSchema = require('../models/usuarios.js');
+import passport from 'passport';
+import {Strategy} from 'passport-local';
+import usuarioSchema from '../models/usuarios.js';
 
 const localStrategy = Strategy;
 
 passport.use('registro', new localStrategy({
-    usernameField: 'userName',
-    passwordField: 'passWord',
+    usernameField: 'username',
+    passwordField: 'password',
     passReqToCallback: true
-    }, async (req, userName, passWord, done) => {
-    const usuarioDB = await usuarioSchema.findOne({userName})
+    }, async (req, username, password, done) => {
+    const usuarioDB = await usuarioSchema.findOne({username})
     if (usuarioDB){
         return done(null,false)
     }
-    const newUsuario = new usuarioSchema()
-    newUsuario.nombre = userName;
-    newUsuario.contraseña = passWord;
-    await newUsuario.save()
-    return done(null, newUsuario)
+    const newUsuario = new usuarioSchema();
+    newUsuario.username = username;
+    newUsuario.contraseña = newUsuario.encrypt(password);
+    await newUsuario.save();
+    return done(null, newUsuario);
 }));
 
 passport.use('login', new localStrategy({
-    usernameField: 'userName',
-    passwordField: 'passWord',
+    usernameField: 'username',
+    passwordField: 'password',
     passReqToCallback: true
-    }, async (req, userName, passWord, done) => {
-    const usuarioDB = await usuarioSchema.findOne({userName})
-    if (!usuarioDB){
+    }, async (req, username, password, done) => {
+    const usuarioDB = await usuarioSchema.findOne({username})
+    const pass = usuarioDB.contraseña;
+    const match = usuarioDB.comparar(password,pass)
+    if (usuarioDB && match){
+        return done(null, usuarioDB)
+    }else{
         return done(null,false)
     }
-    return done(null, usuarioDB)
 }));
 
 passport.serializeUser((usuario, done) => {
@@ -40,4 +43,3 @@ passport.deserializeUser(async (id, done) => {
     const usuario = await usuarioSchema.findById(id);
     done(null, usuario);
 });
-

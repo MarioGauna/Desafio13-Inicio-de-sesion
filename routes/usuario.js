@@ -1,6 +1,6 @@
-const {Router} = require('express');
+import {Router} from 'express';
+import passport from 'passport'
 const router = Router();
-const passport = require('passport');
 
 router.get('/', async(req, res) => {
     res.render('login.ejs', {status: req.session.login})
@@ -8,12 +8,12 @@ router.get('/', async(req, res) => {
 
 router.post('/login', passport.authenticate('login',{
     failureRedirect:'/errorLogin',
-    successRedirect:'/productos',
+    successRedirect:'/api/productos-test',
 }))
 
 router.post('/registro',passport.authenticate('registro',{
     failureRedirect:'/errorRegistro',
-    successRedirect:'/productos',
+    successRedirect:'/api/productos-test',
 }))
 
 router.get('/errorRegistro', async(req, res) => {
@@ -25,14 +25,13 @@ router.get('/errorLogin', async(req, res) => {
 })
 
 router.get("/logout", (req, res) => {
-    let usuario = req.session.user;
 	req.session.destroy( (error) => {
         if (error) {
             res.json(error);
         } else {
-            res.render('logout.ejs',{status: false,usuario});
+            res.render('logout.ejs',{status: false,usuario:req.user.username});
         }
     })
 });
 
-module.exports = router;
+export default router;

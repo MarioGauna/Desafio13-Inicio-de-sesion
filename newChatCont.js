@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
-const configDB = require('./configDBMongo');
+import mongoose from 'mongoose';
+import configDB from './configDBMongo.js';
 
-mongoose.connect(configDB.mongoDB.url,configDB.mongoDB.options)
+//mongoose.connect(configDB.mongoDB.url,configDB.mongoDB.options)
 
-class contMsj {
+export default class contMsj {
     constructor(collectionName,docSchema) {
         this.collection = mongoose.model(collectionName,docSchema);
     }
@@ -22,5 +22,3 @@ class contMsj {
         }
     }
 };
-
-module.exports = contMsj;

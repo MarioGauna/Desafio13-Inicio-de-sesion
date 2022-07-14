@@ -1,6 +1,6 @@
-const knex = require('knex');
+import knex from 'knex'
 
-class contenedorProd {
+export default class contenedorProd {
     constructor(options,table) {
         this.knex = knex(options);
         this.table = table;
@@ -85,5 +85,3 @@ class contenedorProd {
     //     }
     // }
 }
-
-module.exports = contenedorProd;

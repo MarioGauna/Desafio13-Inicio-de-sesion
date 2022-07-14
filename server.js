@@ -1,26 +1,29 @@
-const express = require('express');
-const {Server: ioServer} = require('socket.io');
-const http = require('http');
+import express from "express";
+import {Server} from'socket.io';
+import http from 'http';
 const app = express();
 const httpServer = http.createServer(app);
-const io = new ioServer(httpServer);
+const io = new Server(httpServer);
+import './passport/local.js'
+import './database/database.js'
+import isAuth from './utils/isAuth.js';
 
-const {options} = require('./configDB.js')
-const contenedorProd = require('./contenedorProd.js');
+import options from './configDB.js';
+import contenedorProd from'./contenedorProd.js';
 const content = new contenedorProd(options.mariaDB,'productos');
 
-const contMsj = require('./newChatCont.js');
-const esqMsj = require('./dao/msjShema.js');
+import contMsj from './newChatCont.js';
+import esqMsj from './dao/msjShema.js';
 const chat = new contMsj('mensajes', esqMsj);
-const ProdMock = require('./mocks/prodMock.js');
+import ProdMock from './mocks/prodMock.js';
 
-const MongoStore = require('connect-mongo');
-const passport = require('passport');
-const session = require('express-session');
-const usuario = require('./routes/usuario.js');
+import MongoStore from "connect-mongo";
+import passport from "passport";
+import session from "express-session";
+import usuario from './routes/usuario.js';
 
 
-app.use(express.static(__dirname +"/public"))
+app.use(express.static('public'))
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.set('views','./views');
@@ -32,23 +35,17 @@ app.use(
         resave: false,
         saveUninitialized: false,
         store: MongoStore.create({
-            mongoUrl:'mongodb+srv://gauna_mario:D8GuMWgPoTICAKPv@cluster0.1vxmmjy.mongodb.net/desafio13?retryWrites=true&w=majority'}),
-            options: {
-                useNewUrlParser: true,
-                useUnifiedTopology: true,
-            },
+            mongoUrl:'mongodb+srv://gauna_mario:D8GuMWgPoTICAKPv@cluster0.1vxmmjy.mongodb.net/desafio13session?retryWrites=true&w=majority'}),
         cookie:{maxAge:60000},
         })
 )
 app.use(passport.initialize());
 app.use(passport.session());
 app.use('/',usuario);
-const isAuth = require('./utils/isAuth.js')
-
 
 app.get('/productos',isAuth,async(req,res)=>{
     let products = await content.getAll();
-    res.render('index.ejs',{persona:req.user.userName,products})
+    res.render('index.ejs',{persona:req.user.username,products})
 })
 
 app.post('/productos',async(req,res)=>{
@@ -56,9 +53,10 @@ app.post('/productos',async(req,res)=>{
 })
 
 app.get('/api/productos-test',async(req,res)=>{
+    let persona = req.session.user;
     const pMocker = new ProdMock(5);
     const productos = pMocker.randomProducts();
-    res.render('test.ejs',{productos}) 
+    res.render('test.ejs',{productos,persona:req.user.username}) 
 })
 
 io.on('connection',async(socket)=>{

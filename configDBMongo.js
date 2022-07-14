@@ -6,4 +6,4 @@ const mongoDB={
         },
     }
 
-module.exports = {mongoDB};
+export default {mongoDB};

@@ -1,6 +1,6 @@
-const {faker} = require('@faker-js/faker');
+import {faker} from '@faker-js/faker';
 
-class ProdMock {
+export default class ProdMock {
 
     constructor(cantidad) {
         this.cantidad = cantidad;
@@ -20,5 +20,3 @@ class ProdMock {
         return randomProducts;
     }
 }
-
-module.exports = ProdMock;

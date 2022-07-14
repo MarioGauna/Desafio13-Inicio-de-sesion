@@ -1,4 +1,4 @@
-const mongoose = require('mongoose');
+import mongoose from "mongoose";
 
 const esqMsj = new mongoose.Schema({
     autor:{
@@ -13,4 +13,4 @@ const esqMsj = new mongoose.Schema({
     timestamp:{type:String}
 })
 
-module.exports = esqMsj;
+export default esqMsj;
